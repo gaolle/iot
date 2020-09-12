@@ -1,0 +1,64 @@
+//驱动程序使用的头文件，来自于linux内核源码
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/cdev.h>
+#include <linux/fs.h>
+#include <linux/uaccess.h>
+#include <linux/device.h>
+#include <linux/io.h>
+#include <linux/ioctl.h>
+#include <linux/fs.h>
+
+#define GEC210_LED_ON	_IOW('L',1,unsigned int) 
+#define GEC210_LED_OFF	_IOW('L',2,unsigned int)
+
+static dev_t led_num;//设备号
+static unsigned int led_major = 0;//主设备号。非零--静态注册，0---动态分配 
+static unsigned int led_minor = 0;//次设备号
+
+static void __iomem *GPJ2CON;//定义寄存器的虚拟地址
+static void __iomem *GPJ2DAT;//定义寄存器的虚拟地址
+
+static struct class * gec210_led_class=NULL;
+static struct device * gec210_led_device = NULL;
+static struct resource *led_res;
+//1.定义一个cdev-->定义一个字符设备驱动
+static struct cdev gec210_led_cdev;
+
+
+//2.定义并初始化一个文件操作集
+static int gec210_led_open(struct inode *inode, struct file *filp)
+{
+	printk("gec210 led openning\n");
+	return 0;
+}
+
+static int gec210_led_release(struct inode *inode, struct file *filp)
+{
+	printk("gec210 led closing\n");
+	return 0;
+}
+
+//应用程序使用write()向驱动程序写数据，在驱动程序中，使用write()来接收数据
+//应用程序写下来的数据可以自行定义：char buf[2], buf[1]---哪一盏灯；buf[0]---led的状态
+ssize_t gec210_led_ioctl(struct file *filp, unsigned int cmd, unsigned long args)
+{
+	
+	if((args > 4) || (args < 0))
+		return -EINVAL;
+	switch(cmd){
+		
+	case LED_ON:
+		*(unsigned int *)GPJ2DAT &= ~(1<<(args-1));
+		break;
+		
+	case LED_OFF:
+		*(unsigned int *)GPJ2DAT |= (1<<(args-1));
+		break;
+		
+	default:
+		return -ENOIOCTLCMD;
+	}
+	
+	return 0;//

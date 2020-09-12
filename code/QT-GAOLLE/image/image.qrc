@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>close_led.jpg</file>
+        <file>open_led.jpg</file>
+        <file>button.jpg</file>
+        <file>music_1.jpg</file>
+        <file>music_stop.jpg</file>
+        <file>music.jpg</file>
+        <file>image.qrc</file>
+        <file>left.png</file>
+        <file>pop.png</file>
+        <file>push.png</file>
+        <file>right.jpg</file>
+        <file>1.gif</file>
+    </qresource>
+</RCC>

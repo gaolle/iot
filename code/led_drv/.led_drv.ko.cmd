@@ -1,0 +1,1 @@
+cmd_/home/gec/led_drv1/led_drv.ko := arm-linux-ld -EL -r  -T /home/gec/kernel/linux-3.0.8/scripts/module-common.lds --build-id  -o /home/gec/led_drv1/led_drv.ko /home/gec/led_drv1/led_drv.o /home/gec/led_drv1/led_drv.mod.o
